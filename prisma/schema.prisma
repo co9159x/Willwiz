@@ -6,8 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Tenant {
@@ -30,7 +30,7 @@ model User {
   id             String    @id @default(uuid())
   email          String    @unique
   hashedPassword String
-  role           String // broker, broker_admin, platform_admin
+  role           UserRole  @default(broker)
   tenantId       String?
   lastLoginAt    DateTime?
   createdAt      DateTime  @default(now())
@@ -39,10 +39,16 @@ model User {
   tenant Tenant? @relation(fields: [tenantId], references: [id])
 }
 
-// SQLite doesn't support enums, so we use strings
+enum UserRole {
+  broker
+  broker_admin
+  platform_admin
+}
+
+// PostgreSQL supports enums and JSON natively
 
 model Client {
-  id            String    @id @default(uuid())
+  id            String       @id @default(uuid())
   tenantId      String
   firstName     String
   lastName      String
@@ -53,11 +59,11 @@ model Client {
   addressLine2  String?
   city          String?
   postcode      String?
-  country       String    @default("UK")
-  status        String    @default("active")
+  country       String       @default("UK")
+  status        ClientStatus @default(active)
   lastUpdatedBy String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
   
   // Relations
   tenant    Tenant     @relation(fields: [tenantId], references: [id])
@@ -70,13 +76,19 @@ model Client {
   @@unique([tenantId, email])
 }
 
+enum ClientStatus {
+  active
+  inactive
+  archived
+}
+
 model Will {
   id             String    @id @default(uuid())
   tenantId       String
   clientId       String
   version        Int       @default(1)
-  status         String    @default("draft") // draft, sent_for_approval, signed
-  jsonPayload    String // JSON stored as string for SQLite compatibility
+  status         WillStatus @default(draft)
+  jsonPayload    Json      // PostgreSQL supports JSON natively
   draftMarkdown  String?
   signedPdfUrl   String?
   checksumSha256 String?
@@ -89,6 +101,12 @@ model Will {
   client Client @relation(fields: [clientId], references: [id])
   
   @@index([tenantId, clientId])
+}
+
+enum WillStatus {
+  draft
+  sent_for_approval
+  signed
 }
 
 model Document {

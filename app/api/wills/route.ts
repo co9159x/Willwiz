@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     const will = await prisma.will.create({
       data: {
         clientId: validatedData.clientId,
-        jsonPayload: validatedData.jsonPayload ? JSON.stringify(validatedData.jsonPayload) : '{}',
+        jsonPayload: validatedData.jsonPayload || {},
         draftMarkdown: validatedData.draftMarkdown || '',
         tenantId: session.user.tenantId,
         status: 'draft',
