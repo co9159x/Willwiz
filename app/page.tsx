@@ -21,6 +21,9 @@ export default function LandingPage() {
             <Link href="/policies/terms">
               <Button variant="ghost" size="sm">Terms</Button>
             </Link>
+            <Link href="/signup">
+              <Button variant="outline" size="sm">Sign Up</Button>
+            </Link>
             <Link href="/login">
               <Button className="button-base">Sign In</Button>
             </Link>
@@ -41,7 +44,7 @@ export default function LandingPage() {
             with our comprehensive suite of tools.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/login">
+            <Link href="/signup">
               <Button size="lg" className="button-base text-lg px-8 py-4">
                 Get Started Free
               </Button>

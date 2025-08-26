@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -91,14 +92,22 @@ export default function LoginPage() {
           
           <div className="mt-6 text-center">
             <p className="text-sm text-slate-600 dark:text-slate-400">
-              Demo accounts:
+              Don't have an account?{' '}
+              <Link href="/signup" className="text-blue-600 hover:text-blue-500 font-medium">
+                Sign up
+              </Link>
             </p>
-            <p className="text-xs text-slate-500 dark:text-slate-500 mt-1">
-              broker@alder.co.uk / test1234
-            </p>
-            <p className="text-xs text-slate-500 dark:text-slate-500">
-              admin@platform.co.uk / admin123
-            </p>
+            <div className="mt-4 pt-4 border-t">
+              <p className="text-sm text-slate-600 dark:text-slate-400">
+                Demo accounts:
+              </p>
+              <p className="text-xs text-slate-500 dark:text-slate-500 mt-1">
+                broker@alder.co.uk / test1234
+              </p>
+              <p className="text-xs text-slate-500 dark:text-slate-500">
+                admin@platform.co.uk / admin123
+              </p>
+            </div>
           </div>
         </CardContent>
       </Card>
