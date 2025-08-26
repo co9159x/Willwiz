@@ -5,6 +5,8 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import AuthProvider from '@/components/providers/session-provider';
 
+export const dynamic = 'force-dynamic';
+
 const inter = Inter({ 
   subsets: ['latin'],
   display: 'swap',
@@ -24,7 +26,13 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getServerSession(authOptions);
+  let session;
+  try {
+    session = await getServerSession(authOptions);
+  } catch (error) {
+    console.error('Error getting session:', error);
+    session = null;
+  }
 
   return (
     <html lang="en">
