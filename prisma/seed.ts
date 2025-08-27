@@ -20,8 +20,10 @@ async function main() {
   });
 
   // Create platform admin
-  await prisma.user.create({
-    data: {
+  await prisma.user.upsert({
+    where: { email: 'admin@platform.co.uk' },
+    update: {},
+    create: {
       email: 'admin@platform.co.uk',
       hashedPassword: await bcrypt.hash('admin123', 12),
       role: 'platform_admin',
@@ -29,8 +31,10 @@ async function main() {
   });
 
   // Create broker users
-  const alderBroker = await prisma.user.create({
-    data: {
+  const alderBroker = await prisma.user.upsert({
+    where: { email: 'broker@alder.co.uk' },
+    update: {},
+    create: {
       email: 'broker@alder.co.uk',
       hashedPassword: await bcrypt.hash('test1234', 12),
       role: 'broker',
@@ -38,8 +42,10 @@ async function main() {
     },
   });
 
-  const birchBroker = await prisma.user.create({
-    data: {
+  const birchBroker = await prisma.user.upsert({
+    where: { email: 'broker@birch.co.uk' },
+    update: {},
+    create: {
       email: 'broker@birch.co.uk',
       hashedPassword: await bcrypt.hash('test1234', 12),
       role: 'broker',

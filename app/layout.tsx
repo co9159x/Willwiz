@@ -17,7 +17,10 @@ export const metadata: Metadata = {
   title: 'My Will - UK Broker Platform',
   description: 'Professional will drafting platform for UK brokers and advisers',
   icons: {
-    icon: '/favicon.ico',
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.ico', sizes: 'any' }
+    ],
   },
 };
 

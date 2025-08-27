@@ -42,7 +42,20 @@ function LoginForm() {
       if (result?.error) {
         setError('Invalid email or password');
       } else {
-        router.push('/dashboard');
+        // Check if user is platform admin and redirect accordingly
+        if (result?.ok) {
+          // Get the session to check user role
+          const response = await fetch('/api/auth/session');
+          const session = await response.json();
+          
+          if (session?.user?.role === 'platform_admin') {
+            router.push('/admin');
+          } else {
+            router.push('/dashboard');
+          }
+        } else {
+          router.push('/dashboard');
+        }
       }
     } catch (error) {
       setError('An error occurred. Please try again.');

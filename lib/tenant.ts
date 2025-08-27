@@ -5,7 +5,20 @@ import { redirect } from 'next/navigation';
 export async function getTenantFromSession() {
   const session = await getServerSession(authOptions);
   
-  if (!session?.user?.tenantId) {
+  if (!session?.user) {
+    redirect('/login');
+  }
+
+  // Platform admin users don't have a tenantId
+  if (session.user.role === 'platform_admin') {
+    return {
+      tenantId: null,
+      userId: session.user.id,
+      role: session.user.role,
+    };
+  }
+
+  if (!session.user.tenantId) {
     redirect('/login');
   }
 
