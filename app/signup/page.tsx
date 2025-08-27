@@ -208,7 +208,6 @@ export default function SignupPage() {
 
             <Button
               type="submit"
-              className="w-full"
               disabled={isLoading}
             >
               {isLoading ? 'Creating Account...' : 'Create Account'}

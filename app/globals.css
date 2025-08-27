@@ -83,11 +83,11 @@
 
 /* Global button styling */
 .button-base {
-  height: 40px;
-  min-width: 140px;
-  padding-left: 16px;
-  padding-right: 16px;
-  border-radius: 12px;
+  height: 36px;
+  min-width: 100px;
+  padding-left: 12px;
+  padding-right: 12px;
+  border-radius: 8px;
 }
 
 /* Glass morphism card styling */
