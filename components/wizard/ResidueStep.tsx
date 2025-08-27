@@ -71,7 +71,7 @@ export function ResidueStep({ data, onUpdate, onNext, onBack }: ResidueStepProps
     onUpdate(updated);
   };
 
-  const isValid = formData.distributionType && formData.funeralWishes;
+  const isValid = formData.distributionType;
 
   return (
     <Card className="card-glass">

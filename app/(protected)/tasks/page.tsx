@@ -403,14 +403,14 @@ export default function TasksPage() {
                       </TableCell>
                       <TableCell>
                         <Badge className={getPriorityColor(task.priority)}>
-                          {task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}
+                          {task.priority ? task.priority.charAt(0).toUpperCase() + task.priority.slice(1) : 'Unknown'}
                         </Badge>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
                           {getStatusIcon(task.status)}
                           <Badge className={getStatusColor(task.status)}>
-                            {task.status.replace('_', ' ').charAt(0).toUpperCase() + task.status.replace('_', ' ').slice(1)}
+                            {task.status ? task.status.replace('_', ' ').charAt(0).toUpperCase() + task.status.replace('_', ' ').slice(1) : 'Unknown'}
                           </Badge>
                         </div>
                       </TableCell>
