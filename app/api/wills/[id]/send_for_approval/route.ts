@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
+import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/db';
-import { writeAudit } from '@/lib/audit';
 
 export async function POST(
   request: NextRequest,
@@ -10,10 +9,12 @@ export async function POST(
 ) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user?.tenantId) {
+    
+    if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // Verify the will exists and belongs to the user's tenant
     const will = await prisma.will.findFirst({
       where: {
         id: params.id,
@@ -25,35 +26,44 @@ export async function POST(
       return NextResponse.json({ error: 'Will not found' }, { status: 404 });
     }
 
+    // Check if the will is in draft status
     if (will.status !== 'draft') {
-      return NextResponse.json(
-        { error: 'Will must be in draft status to send for approval' },
-        { status: 400 }
-      );
+      return NextResponse.json({ 
+        error: 'Will must be in draft status to send for approval' 
+      }, { status: 400 });
     }
 
+    // Check if the will has the minimum required data
+    if (!will.jsonPayload || !will.draftMarkdown) {
+      return NextResponse.json({ 
+        error: 'Will must have complete data before sending for approval' 
+      }, { status: 400 });
+    }
+
+    // Update the will status to sent_for_approval
     const updatedWill = await prisma.will.update({
       where: { id: params.id },
       data: {
         status: 'sent_for_approval',
+        updatedAt: new Date(),
+      },
+      include: {
+        client: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+          },
+        },
       },
     });
 
-    await writeAudit({
-      tenantId: session.user.tenantId,
-      userId: session.user.id,
-      event: 'SEND_FOR_APPROVAL',
-      entityType: 'Will',
-      entityId: params.id,
-      meta: { previousStatus: will.status },
+    return NextResponse.json({
+      message: 'Will sent for approval successfully',
+      will: updatedWill,
     });
-
-    return NextResponse.json(updatedWill);
   } catch (error) {
-    console.error('Error sending for approval:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    console.error('Error sending will for approval:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

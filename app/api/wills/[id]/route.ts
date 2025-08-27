@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
+import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/db';
-import { writeAudit } from '@/lib/audit';
-import { willUpdateSchema } from '@/lib/validate';
+import { z } from 'zod';
+
+const updateWillSchema = z.object({
+  jsonPayload: z.record(z.any()).optional(),
+  draftMarkdown: z.string().optional(),
+  version: z.number().optional(),
+});
 
 export async function GET(
   request: NextRequest,
@@ -11,7 +16,8 @@ export async function GET(
 ) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user?.tenantId) {
+    
+    if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -23,6 +29,7 @@ export async function GET(
       include: {
         client: {
           select: {
+            id: true,
             firstName: true,
             lastName: true,
           },
@@ -37,10 +44,7 @@ export async function GET(
     return NextResponse.json(will);
   } catch (error) {
     console.error('Error fetching will:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -50,38 +54,39 @@ export async function PATCH(
 ) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user?.tenantId) {
+    
+    if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
-    const validatedData = willUpdateSchema.parse(body);
+    const updateData = updateWillSchema.parse(body);
 
-    const will = await prisma.will.findFirst({
+    // Verify the will exists and belongs to the user's tenant
+    const existingWill = await prisma.will.findFirst({
       where: {
         id: params.id,
         tenantId: session.user.tenantId,
       },
     });
 
-    if (!will) {
+    if (!existingWill) {
       return NextResponse.json({ error: 'Will not found' }, { status: 404 });
     }
 
-    // Determine if this is a material change that should bump version
-    const isMaterialChange = 
-      JSON.stringify(validatedData.jsonPayload) !== JSON.stringify(will.jsonPayload) ||
-      validatedData.draftMarkdown !== will.draftMarkdown;
-
+    // Update the will
     const updatedWill = await prisma.will.update({
-      where: { id: params.id },
+      where: {
+        id: params.id,
+      },
       data: {
-        ...validatedData,
-        version: isMaterialChange ? will.version + 1 : will.version,
+        ...updateData,
+        updatedAt: new Date(),
       },
       include: {
         client: {
           select: {
+            id: true,
             firstName: true,
             lastName: true,
           },
@@ -89,25 +94,56 @@ export async function PATCH(
       },
     });
 
-    await writeAudit({
-      tenantId: session.user.tenantId,
-      userId: session.user.id,
-      event: 'UPDATE_WILL',
-      entityType: 'Will',
-      entityId: params.id,
-      meta: { 
-        version: updatedWill.version,
-        isMaterialChange,
-        updatedFields: Object.keys(validatedData),
-      },
-    });
-
     return NextResponse.json(updatedWill);
   } catch (error) {
     console.error('Error updating will:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    
+    if (error instanceof z.ZodError) {
+      return NextResponse.json({ error: 'Invalid request data', details: error.errors }, { status: 400 });
+    }
+
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const session = await getServerSession(authOptions);
+    
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Verify the will exists and belongs to the user's tenant
+    const existingWill = await prisma.will.findFirst({
+      where: {
+        id: params.id,
+        tenantId: session.user.tenantId,
+      },
+    });
+
+    if (!existingWill) {
+      return NextResponse.json({ error: 'Will not found' }, { status: 404 });
+    }
+
+    // Only allow deletion of draft wills
+    if (existingWill.status !== 'draft') {
+      return NextResponse.json({ error: 'Only draft wills can be deleted' }, { status: 400 });
+    }
+
+    // Delete the will
+    await prisma.will.delete({
+      where: {
+        id: params.id,
+      },
+    });
+
+    return NextResponse.json({ message: 'Will deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting will:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
