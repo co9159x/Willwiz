@@ -16,7 +16,7 @@ interface Guardian {
   address: string;
 }
 
-interface GuardianshipData {
+export interface GuardianshipData {
   hasMinorChildren: boolean;
   guardians: Guardian[];
   specialInstructions: string;

@@ -168,7 +168,7 @@ export function ReviewStep({
             
             {activeSection === 'guardianship' && data.guardianship && (
               <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-lg space-y-3">
-                {data.guardianship.guardians.map((guardian, index) => (
+                {data.guardianship.guardians.map((guardian: any, index: number) => (
                   <div key={guardian.id} className="border rounded p-3">
                     <p><strong>Name:</strong> {guardian.fullName}</p>
                     <p><strong>Relationship:</strong> {guardian.relationship || 'Not specified'}</p>
@@ -208,7 +208,7 @@ export function ReviewStep({
               {data.residue.specificGifts && data.residue.specificGifts.length > 0 && (
                 <div>
                   <p><strong>Specific Gifts:</strong></p>
-                  {data.residue.specificGifts.map((gift, index) => (
+                  {data.residue.specificGifts.map((gift: any, index: number) => (
                     <div key={gift.id} className="ml-4 mt-2 p-2 border rounded">
                       <p><strong>To:</strong> {gift.beneficiary}</p>
                       <p><strong>Item/Amount:</strong> {gift.itemOrAmount}</p>

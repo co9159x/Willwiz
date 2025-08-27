@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Plus, X, User } from 'lucide-react';
 
-interface Executor {
+export interface Executor {
   id: string;
   fullName: string;
   relationship: string;

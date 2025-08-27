@@ -5,11 +5,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { PersonalInfoStep } from './PersonalInfoStep';
-import { ExecutorsStep } from './ExecutorsStep';
-import { BeneficiariesStep } from './BeneficiariesStep';
-import { GuardianshipStep } from './GuardianshipStep';
-import { ResidueStep } from './ResidueStep';
+import { PersonalInfoStep, PersonalInfoData } from './PersonalInfoStep';
+import { ExecutorsStep, Executor } from './ExecutorsStep';
+import { BeneficiariesStep, Beneficiary } from './BeneficiariesStep';
+import { GuardianshipStep, GuardianshipData } from './GuardianshipStep';
+import { ResidueStep, ResidueData } from './ResidueStep';
 import { ReviewStep } from './ReviewStep';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
@@ -232,7 +232,7 @@ export function WillWizard({ clientId, willId, initialData }: WillWizardProps) {
       case 0:
         return (
           <PersonalInfoStep
-            data={stepData}
+            data={stepData as PersonalInfoData}
             onUpdate={handleStepUpdate}
             onNext={handleNext}
             onBack={handleBack}
@@ -241,7 +241,7 @@ export function WillWizard({ clientId, willId, initialData }: WillWizardProps) {
       case 1:
         return (
           <ExecutorsStep
-            data={stepData}
+            data={stepData as Executor[]}
             onUpdate={handleStepUpdate}
             onNext={handleNext}
             onBack={handleBack}
@@ -250,7 +250,7 @@ export function WillWizard({ clientId, willId, initialData }: WillWizardProps) {
       case 2:
         return (
           <BeneficiariesStep
-            data={stepData}
+            data={stepData as Beneficiary[]}
             onUpdate={handleStepUpdate}
             onNext={handleNext}
             onBack={handleBack}
@@ -259,7 +259,7 @@ export function WillWizard({ clientId, willId, initialData }: WillWizardProps) {
       case 3:
         return (
           <GuardianshipStep
-            data={stepData}
+            data={stepData as GuardianshipData}
             onUpdate={handleStepUpdate}
             onNext={handleNext}
             onBack={handleBack}
@@ -268,7 +268,7 @@ export function WillWizard({ clientId, willId, initialData }: WillWizardProps) {
       case 4:
         return (
           <ResidueStep
-            data={stepData}
+            data={stepData as ResidueData}
             onUpdate={handleStepUpdate}
             onNext={handleNext}
             onBack={handleBack}

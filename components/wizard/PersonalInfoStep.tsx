@@ -11,7 +11,7 @@ import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 
-interface PersonalInfoData {
+export interface PersonalInfoData {
   fullName: string;
   dateOfBirth: Date | null;
   address: {

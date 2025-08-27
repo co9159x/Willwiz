@@ -16,7 +16,7 @@ interface SpecificGift {
   notes: string;
 }
 
-interface ResidueData {
+export interface ResidueData {
   distributionType: 'equal' | 'percentages' | 'custom';
   specificGifts: SpecificGift[];
   funeralWishes: string;
