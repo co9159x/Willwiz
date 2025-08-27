@@ -18,8 +18,7 @@ export const metadata: Metadata = {
   description: 'Professional will drafting platform for UK brokers and advisers',
   icons: {
     icon: [
-      { url: '/favicon.svg', type: 'image/svg+xml' },
-      { url: '/favicon.ico', sizes: 'any' }
+      { url: '/favicon.svg', type: 'image/svg+xml' }
     ],
   },
 };

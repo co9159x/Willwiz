@@ -206,12 +206,14 @@ export default function SignupPage() {
               </div>
             </div>
 
-            <Button
-              type="submit"
-              disabled={isLoading}
-            >
-              {isLoading ? 'Creating Account...' : 'Create Account'}
-            </Button>
+            <div className="flex justify-center">
+              <Button
+                type="submit"
+                disabled={isLoading}
+              >
+                {isLoading ? 'Creating Account...' : 'Create Account'}
+              </Button>
+            </div>
           </form>
 
           <div className="mt-6 text-center">

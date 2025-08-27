@@ -109,14 +109,16 @@ function LoginForm() {
             {error && (
               <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
             )}
-            <Button
-              type="submit"
-              className="button-base"
-              disabled={isLoading}
-            >
+            <div className="flex justify-center">
+              <Button
+                type="submit"
+                className="button-base"
+                disabled={isLoading}
+              >
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Sign in
             </Button>
+            </div>
           </form>
           
           <div className="mt-6 text-center">
