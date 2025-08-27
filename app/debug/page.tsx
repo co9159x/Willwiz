@@ -3,6 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default async function DebugPage() {
   try {
+    // Test database connection first
+    await prisma.$connect();
+    
     const users = await prisma.user.findMany({
       include: { tenant: true },
     });
@@ -14,6 +17,8 @@ export default async function DebugPage() {
         },
       },
     });
+
+    await prisma.$disconnect();
 
     return (
       <div className="p-8 space-y-6">
@@ -58,11 +63,14 @@ export default async function DebugPage() {
       </div>
     );
   } catch (error) {
+    console.error('Debug page error:', error);
     return (
       <div className="p-8">
         <h1 className="text-3xl font-bold text-red-600">Database Error</h1>
-        <pre className="mt-4 p-4 bg-red-50 border rounded">
+        <pre className="mt-4 p-4 bg-red-50 border rounded overflow-auto">
           {error instanceof Error ? error.message : 'Unknown error'}
+          {'\n\nStack trace:\n'}
+          {error instanceof Error ? error.stack : 'No stack trace available'}
         </pre>
       </div>
     );
